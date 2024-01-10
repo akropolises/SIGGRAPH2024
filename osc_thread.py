@@ -30,6 +30,15 @@ def judge(unused_addr, args, volume):
     if abs(X-x) > 30 or abs(Y-y) > 30:
         g.g.beyond_ok()
         return
+    g.g.touch()
+    if g.g.get_touch_count() >= 3:
+        g.g.reset_touch()
+        for client in g.clients:
+            client.send_message("/play", action_dict["rotate"])
+        moveXY(g.STAY_X, 250)
+        g.g.beyond_lock()
+        g.g.reset_realcnt()
+        return
     if abs(X-x) < 5 or abs(Y-y) < 5 and Z:
         print(X,Y,Z,x,y,position, "touch")
         hand_touched()
@@ -48,20 +57,11 @@ def hand_reaching(Xp, Yp):
         client.send_message("/play", action_dict[action])
 
 def hand_touched():
-    g.g.touch()
-    if g.g.get_touch_count() < 3:
-        for client in g.clients:
-            client.send_message("/play", action_dict["warp"])
-        g.g.move_lock()
-        sleep(2)
-        g.g.move_ok()
-    else:
-        g.g.reset_touch()
-        for client in g.clients:
-            client.send_message("/play", action_dict["rotate"])
-        moveXY(g.STAY_X, 250)
-        g.g.beyond_lock()
-        g.g.reset_realcnt()
+    for client in g.clients:
+        client.send_message("/play", action_dict["warp"])
+    g.g.move_lock()
+    sleep(2)
+    g.g.move_ok()
 
 """
 ylim = 0.1
