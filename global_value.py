@@ -3,13 +3,49 @@ class GlobalValue:
     def __init__(self) -> None:
         self.__X = -10
         self.__Y = -10
-        self.__count = 0
-        self.__movable = False
         self.__lock = threading.Lock()
-        self.__touch_count = 0
+        self.__movable = False
         self.__beyondable = False
+        self.__count = 0
+        self.__touch_count = 0
         self.__real_count = 0
     
+    #XY関係
+    def setX(self, value):
+        self.__lock.acquire()
+        if not (0<=value<=280):
+            value = max(0, value)
+            value = min(280, value)
+        self.__X = value
+        self.__lock.release()
+
+    def setY(self, value):
+        self.__lock.acquire()
+        if not (0<=value<=250):
+            value = max(0, value)
+            value = min(250, value)
+        self.__Y = value
+        self.__lock.release()
+    
+    def maxX(self):
+        if self.__Y > HM_Y:
+            return 280
+        else:
+            return 250
+
+    def minX(self):
+        if self.__Y > HM_Y:
+            return 0
+        else:
+            return 30 
+    
+    def getX(self):
+        return self.__X
+    
+    def getY(self):
+        return self.__Y
+
+    # movable関係
     def move_lock(self):
         self.__lock.acquire()
         self.__movable = False
@@ -24,87 +60,65 @@ class GlobalValue:
     def movable(self):
         return self.__movable
 
+    # beyondable関係
+    def beyond_lock(self):
+        self.__lock.acquire()
+        self.__beyondable = False
+        self.__lock.release()
+    
+    def beyond_ok(self):
+        self.__lock.acquire()
+        self.__beyondable = True
+        self.__lock.release()
+    
+    def beyondable(self):
+        return self.__beyondable
+
+    # count関係
     def cntUP(self):
         if not self.__movable:
             return
         self.__lock.acquire()
         self.__count += 1
         self.__lock.release()
-    
-    def getcnt(self):
-        return self.__count
 
     def reset_cnt(self):
         self.__lock.acquire()
         self.__count = 0
         self.__lock.release()
 
-    def setX(self, value):
-        self.__lock.acquire()
-        self.__X = value
-        if not (0<=self.__X<=280):
-            self.__X = max(0,self.__X)
-            self.__X = min(280,self.__X)
-        self.__lock.release()
-
-    def setY(self, value):
-        self.__lock.acquire()
-        self.__Y = value
-        if not (0<=self.__Y<=250):
-            self.__Y = max(0,self.__Y)
-            self.__Y = min(250,self.__Y)
-        self.__lock.release()
+    def getcnt(self):
+        return self.__count
     
-    def getX(self):
-        return self.__X
-    
-    def getY(self):
-        return self.__Y
-    
+    # touch_count関係
     def touch(self):
+        self.__lock.acquire()
         self.__touch_count += 1
+        self.__lock.release()
+    
+    def reset_touch(self):
+        self.__lock.acquire()
+        self.__touch_count = 0
+        self.__lock.release()
     
     def get_touch_count(self):
         return self.__touch_count
     
-    def reset_touch(self):
-        self.__touch_count = 0
-
-    def beyond_lock(self):
-        self.__beyondable = False
-    
-    def beyond_ok(self):
-        self.__beyondable = True
-    
-    def beyondable(self):
-        return self.__beyondable
-    
+    # real_count関係
     def realcntUP(self):
         if not self.__movable:
             return
         self.__lock.acquire()
         self.__real_count += 1
         self.__lock.release()
-    
-    def get_realcnt(self):
-        return self.__real_count
 
     def reset_realcnt(self):
         self.__lock.acquire()
         self.__real_count = 0
         self.__lock.release()
 
-    def maxX(self):
-        if self.__Y > HM_Y:
-            return 280
-        else:
-            return 250
-
-    def minX(self):
-        if self.__Y > HM_Y:
-            return 0
-        else:
-            return 30 
+    def get_realcnt(self):
+        return self.__real_count
 
 g = GlobalValue()
 HM_Y = 100

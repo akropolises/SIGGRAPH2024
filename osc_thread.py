@@ -33,11 +33,9 @@ def judge(unused_addr, args, volume):
     if abs(X-x) < 5 or abs(Y-y) < 5 and Z:
         print(X,Y,Z,x,y,position, "touch")
         hand_touched()
-        sleep(1)
-        g.g.beyond_ok()
-        return
-    print(X,Y,Z,x,y,position, "reach")
-    hand_reaching(x-X, y-Y)
+    else:
+        print(X,Y,Z,x,y,position, "reach")
+        hand_reaching(x-X, y-Y)
     sleep(1)
     g.g.beyond_ok()
 
@@ -45,11 +43,9 @@ def hand_reaching(Xp, Yp):
     x = 10 if Xp>0 else -10
     y = 10 if Yp>0 else -10
     moveXY(x,y,relative=True)
+    action = "dodge_R" if x>0 else "dodge_L"
     for client in g.clients:
-        if x > 0:
-            client.send_message("/play", action_dict["dodge_R"])
-        else:
-            client.send_message("/play", action_dict["dodge_L"])
+        client.send_message("/play", action_dict[action])
 
 def hand_touched():
     g.g.touch()

@@ -63,7 +63,6 @@ def moveY(y:int, relative = False):
     if relative:
         y = g.g.getY() + y
     x = g.g.getX()
-    # assert(0<=y<=250)
     if g.g.getY() < g.HM_Y < y or y < g.HM_Y < g.g.getY() or y == g.HM_Y:
         g.ser.write(str.encode("G1 X"+str(g.HM_X)+"\n"))
         g.ser.write(str.encode("G1 Y"+str(g.HM_Y)+"\n"))
@@ -72,11 +71,13 @@ def moveY(y:int, relative = False):
             continue
         for client in g.clients:
             client.send_message("/beyond", "b")
-    g.g.setY(y)
+        g.ser.write(str.encode("G1 Y"+str(y)+"\n"))
     x = max(g.g.minX(), x)
     x = min(g.g.maxX(), x)
     g.ser.write(str.encode("G1 X"+str(x)+" Y"+str(y)+"\n"))
     moving()
+    g.g.setX(x)
+    g.g.setY(y)
 
 def moveXY(x:int, y:int, relative = False):
     if not g.g.movable():
@@ -84,9 +85,6 @@ def moveXY(x:int, y:int, relative = False):
     if relative:
         x = g.g.getX() + x
         y = g.g.getY() + y
-    x = max(g.g.minX(), x)
-    x = min(g.g.maxX(), x)
-    # assert(0<=y<=250)
     if g.g.getY() < g.HM_Y < y or y < g.HM_Y < g.g.getY() or y == g.HM_Y:
         g.ser.write(str.encode("G1 X"+str(g.HM_X)+"\n"))
         g.ser.write(str.encode("G1 Y"+str(g.HM_Y)+"\n"))
@@ -95,10 +93,9 @@ def moveXY(x:int, y:int, relative = False):
             continue
         for client in g.clients:
             client.send_message("/beyond", "b")
-        r = random()
-        print(r)
-        if r < 0.5:
-            g.ser.write(str.encode("G1 Y"+str(y)+"\n"))
+        g.ser.write(str.encode("G1 Y"+str(y)+"\n"))
+    x = max(g.g.minX(), x)
+    x = min(g.g.maxX(), x)
     g.ser.write(str.encode("G1 X"+str(x) + " Y"+str(y)+"\n"))
     moving()
     g.g.setX(x)
@@ -106,7 +103,6 @@ def moveXY(x:int, y:int, relative = False):
 
 def stay():
     for client in g.clients:
-        # client.send_message("/play", action_dict["disappear"])
         client.send_message("/play", action_dict["move"])
     moveXY(g.STAY_X, g.STAY_Y)
     g.g.beyond_lock()
