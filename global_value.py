@@ -5,7 +5,6 @@ class GlobalValue:
         self.__Y = -10
         self.__lock = threading.Lock()
         self.__movable = False
-        self.__beyondable = False
         self.__count = 0
         self.__touch_count = 0
         self.__real_count = 0
@@ -59,20 +58,6 @@ class GlobalValue:
     
     def movable(self):
         return self.__movable
-
-    # beyondable関係
-    def beyond_lock(self):
-        self.__lock.acquire()
-        self.__beyondable = False
-        self.__lock.release()
-    
-    def beyond_ok(self):
-        self.__lock.acquire()
-        self.__beyondable = True
-        self.__lock.release()
-    
-    def beyondable(self):
-        return self.__beyondable
 
     # count関係
     def cntUP(self):

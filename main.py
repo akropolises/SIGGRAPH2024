@@ -38,7 +38,6 @@ while True:
             client.send_message("/play", action_dict[action])
         moveX(280-g.g.getX())
         g.g.reset_cnt()
-        g.g.beyond_ok()
         continue
     if g.g.getcnt() <= 20:
         continue
